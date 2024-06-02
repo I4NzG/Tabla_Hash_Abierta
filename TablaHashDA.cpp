@@ -5,7 +5,7 @@
 #include "TablaHashDA.hpp"
 
 //********************************************************
-TablaHashDA::TablaHashDA(int capacidad){
+TablaHashDA::TablaHashDA(int capacidad) : capacidad(capacidad), tam(0){
     tabla = new Entrada[capacidad];
     eliminado = Entrada(-1, "<eliminado>");
 }
@@ -14,7 +14,7 @@ TablaHashDA::~TablaHashDA(){
     delete[] tabla;
 }
 
-TablaHashDA::TablaHashDA(const TablaHashDA &otra){
+TablaHashDA::TablaHashDA(const TablaHashDA &otra) : capacidad(otra.capacidad), tam(otra.tam){
     tabla = new Entrada[capacidad];
     for (int i = 0; i < capacidad; ++i) {
         tabla[i] = otra.tabla[i];
@@ -22,8 +22,9 @@ TablaHashDA::TablaHashDA(const TablaHashDA &otra){
     eliminado = otra.eliminado;
 }
 
-TablaHashDA & TablaHashDA::operator=(const TablaHashDA &otra){
-    if(this == &otra){
+
+TablaHashDA &TablaHashDA::operator=(const TablaHashDA &otra){
+    if (this == &otra) {
         return *this;
     }
     delete[] tabla;
@@ -40,29 +41,32 @@ TablaHashDA & TablaHashDA::operator=(const TablaHashDA &otra){
 //********************************************************
 
 bool TablaHashDA::agregar(int numero, const std::string &nombre){
-    if((tam + 1) * 4 >= capacidad * 3){
-        //Realiza el rehashing si la relacion tamaño/capacidad es igual o mayor a 3/4
+    if ((tam + 1) * 4 >= capacidad * 3){
         rehash();
     }
 
-    for (int i = 0; i < capacidad; ++i) {
+    for (int i = 0; i < capacidad; ++i){
         int indice = sondeo(funcionHash(numero), i);
-        if(tabla[indice].numero == -1 || tabla[indice] == eliminado){
+        if (tabla[indice].numero == -1 || tabla[indice] == eliminado){
             tabla[indice] = Entrada(numero, nombre);
             ++tam;
             return true;
+        }
+        if (tabla[indice].numero == numero && tabla[indice].nombre == nombre){
+            return false;
         }
     }
     return false;
 }
 
+
 bool TablaHashDA::eliminar(int numero, const std::string &nombre){
-    for (int i = 0; i < capacidad; ++i) {
+    for (int i = 0; i < capacidad; ++i){
         int indice = sondeo(funcionHash(numero), i);
-        if(tabla[indice].numero == -1){
-            return false; //La clave no está en la tabla.
+        if (tabla[indice].numero == -1){
+            return false;
         }
-        if(tabla[indice] == Entrada(numero, nombre)){
+        if (tabla[indice] == Entrada(numero, nombre)){
             tabla[indice] = eliminado;
             --tam;
             return true;
@@ -72,12 +76,12 @@ bool TablaHashDA::eliminar(int numero, const std::string &nombre){
 }
 
 bool TablaHashDA::buscar(int numero, const std::string &nombre){
-    for (int i = 0; i < capacidad; ++i) {
+    for (int i = 0; i < capacidad; ++i){
         int indice = sondeo(funcionHash(numero), i);
-        if(tabla[indice].numero == -1){
-            return false; //La clave no está en la tabla.
+        if (tabla[indice].numero == -1){
+            return false;
         }
-        if(tabla[indice] == Entrada(numero, nombre)){
+        if (tabla[indice] == Entrada(numero, nombre)) {
             return true;
         }
     }
@@ -87,8 +91,8 @@ bool TablaHashDA::buscar(int numero, const std::string &nombre){
 //********************************************************
 
 void TablaHashDA::imprimir() const{
-    for (int i = 0; i < capacidad; ++i) {
-        if(tabla[i].numero != -1 && tabla[i] != eliminado){
+    for (int i = 0; i < capacidad; ++i){
+        if (tabla[i].numero != -1 && tabla[i] != eliminado){
             std::cout << i << ": (" << tabla[i].numero << ", " << tabla[i].nombre << ")" << std::endl;
         }else{
             std::cout << i << ": " << "<vacio o eliminado>" << std::endl;
@@ -128,29 +132,22 @@ int TablaHashDA::sondeo(int hash, int i) const{
     return (hash + i) % capacidad;
 }
 
-void TablaHashDA::rehash(){
-    int nuevaCapacidad = capacidad * 2; // Doble la capacidad actual
-    Entrada* nuevaTabla = new Entrada[nuevaCapacidad];
+void TablaHashDA::rehash() {
+    int nuevaCapacidad = capacidad * 2;
+    Entrada *nuevaTabla = new Entrada[nuevaCapacidad];
 
-    // Guarda la tabla actual
-    Entrada* temp = tabla;
+    Entrada *temp = tabla;
     int tempCapacidad = capacidad;
 
-    // Actualiza la tabla actual
     tabla = nuevaTabla;
     capacidad = nuevaCapacidad;
     tam = 0;
 
-    // Reinicializa ELIMINADO
-    eliminado = Entrada(-1, "<eliminado>");
-
-    // Reinserta todas las entradas en la nueva tabla
     for (int i = 0; i < tempCapacidad; ++i) {
         if (temp[i].numero != -1 && temp[i] != eliminado) {
             agregar(temp[i].numero, temp[i].nombre);
         }
     }
 
-    // Libera la memoria de la tabla anterior
     delete[] temp;
 }

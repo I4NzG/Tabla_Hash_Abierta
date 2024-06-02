@@ -39,5 +39,20 @@ int main() {
             << std::endl;
   std::cout << "Tamaño actual de la tabla: " << tabla.obtenerTam() << std::endl;
 
+  std::cout << "Agregando mas elementos...\n";
+  // Agregar más elementos para hacer rehashing
+  tabla.agregar(41, "Elemento6");
+  tabla.agregar(51, "Elemento7");
+  tabla.agregar(61, "Elemento8");
+  tabla.agregar(2, "Elemento2");
+  tabla.agregar(11, "Elemento3");
+
+  // Imprimir la tabla actualizada después del rehashing
+  tabla.imprimir();
+
+  // Obtener la nueva capacidad y tamaño actual
+  std::cout << "Nueva capacidad de la tabla: " << tabla.obtenerCapacidad()
+            << std::endl;
+  std::cout << "Tamaño actual de la tabla: " << tabla.obtenerTam() << std::endl;
   return 0;
 }

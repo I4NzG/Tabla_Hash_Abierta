@@ -54,5 +54,14 @@ int main() {
   std::cout << "Nueva capacidad de la tabla: " << tabla.obtenerCapacidad()
             << std::endl;
   std::cout << "Tamaño actual de la tabla: " << tabla.obtenerTam() << std::endl;
+
+  std::cout << "Seguna tabla: " << std::endl;
+  TablaHashDA tabla2(2);
+  tabla2.imprimir();
+  std::cout << "Copiar la primera tabla en la segunda tabla: " << std::endl;
+  tabla2 = tabla;
+  tabla2.imprimir();
+
   return 0;
+
 }
